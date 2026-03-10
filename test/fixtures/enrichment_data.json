@@ -1,0 +1,128 @@
+{
+  "ip_enrichments": [
+    {
+      "ip": "192.168.1.100",
+      "source": "virustotal",
+      "verdict": "malicious",
+      "threat_score": 85,
+      "last_analysis_date": "2026-03-01T10:00:00Z",
+      "data": {
+        "country": "US",
+        "asn": "AS13335",
+        "organization": "Google LLC",
+        "threat_categories": ["trojan", "spyware"],
+        "detected_engines": 45,
+        "total_engines": 75
+      }
+    },
+    {
+      "ip": "10.0.0.50",
+      "source": "abuseipdb",
+      "verdict": "suspicious",
+      "threat_score": 45,
+      "last_analysis_date": "2026-02-28T15:30:00Z",
+      "data": {
+        "country": "CN",
+        "asn": "AS9808",
+        "organization": "China Mobile",
+        "abuse_reports": 12,
+        "total_reports": 25
+      }
+    }
+  ],
+  "domain_enrichments": [
+    {
+      "domain": "malicious-c2.evil.com",
+      "source": "virustotal",
+      "verdict": "malicious",
+      "threat_score": 92,
+      "last_analysis_date": "2026-03-02T08:15:00Z",
+      "data": {
+        "reputation": -95,
+        "detected_engines": 52,
+        "total_engines": 75,
+        "categories": ["malware", "c2"],
+        "dns_records": {
+          "A": ["192.168.1.200"],
+          "MX": ["mail.evil.com"]
+        }
+      }
+    },
+    {
+      "domain": "suspicious-phishing.com",
+      "source": "otx",
+      "verdict": "suspicious",
+      "threat_score": 55,
+      "last_analysis_date": "2026-02-25T12:00:00Z",
+      "data": {
+        "reputation": -30,
+        "detection_count": 8,
+        "indicators": ["phishing", "credential-theft"]
+      }
+    }
+  ],
+  "hash_enrichments": [
+    {
+      "hash": "5d41402abc4b2a76b9719d911017c592",
+      "hash_type": "md5",
+      "source": "virustotal",
+      "verdict": "malicious",
+      "threat_score": 89,
+      "last_analysis_date": "2026-03-01T14:20:00Z",
+      "data": {
+        "detected_engines": 48,
+        "total_engines": 75,
+        "file_name": "trojan.exe",
+        "file_size": 524288,
+        "file_type": "PE32 executable"
+      }
+    },
+    {
+      "hash": "356a192b7913b04c54574d18c28d46e6395428ab",
+      "hash_type": "sha1",
+      "source": "hybrid_analysis",
+      "verdict": "malicious",
+      "threat_score": 78,
+      "last_analysis_date": "2026-02-28T09:45:00Z",
+      "data": {
+        "verdict": "malware",
+        "analysis_date": "2026-02-28T09:45:00Z",
+        "threat_level": 100,
+        "sandbox_signature": ["creates-suspicious-registry-keys"]
+      }
+    }
+  ],
+  "url_enrichments": [
+    {
+      "url": "http://malicious-site.com/payload.exe",
+      "source": "virustotal",
+      "verdict": "malicious",
+      "threat_score": 88,
+      "last_analysis_date": "2026-03-02T11:30:00Z",
+      "data": {
+        "detected_engines": 50,
+        "total_engines": 75,
+        "categories": ["malware", "trojan"],
+        "last_http_response_code": 200,
+        "domain_reputation": -90
+      }
+    }
+  ],
+  "filepath_enrichments": [
+    {
+      "filepath": "C:\\Users\\Admin\\AppData\\Local\\Temp\\malware.bin",
+      "source": "virustotal",
+      "verdict": "malicious",
+      "threat_score": 80,
+      "last_analysis_date": "2026-03-01T16:00:00Z",
+      "data": {
+        "common_locations": [
+          "C:\\Users\\Admin\\AppData\\Roaming\\",
+          "C:\\Windows\\Temp\\",
+          "C:\\Program Files\\Suspicious\\"
+        ],
+        "threat_categories": ["trojan", "backdoor"]
+      }
+    }
+  ]
+}

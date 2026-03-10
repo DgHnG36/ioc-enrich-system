@@ -1,0 +1,111 @@
+syntax = "proto3";
+
+package ioc.v1;
+
+option go_package = "github.com/DgHnG36/ioc_enrichment_service/shared/go/ioc/v1;iocv1";
+
+/* ENUMS */
+
+enum IoCType {
+    IOC_TYPE_UNSPECIFIED = 0;
+    IOC_TYPE_IP = 1;
+    IOC_TYPE_DOMAIN = 2;
+    IOC_TYPE_URL = 3;
+    IOC_TYPE_HASH_MD5 = 4;
+    IOC_TYPE_HASH_SHA1 = 5;
+    IOC_TYPE_HASH_SHA256 = 6;
+    IOC_TYPE_FILE_PATH = 7;
+}
+
+enum Severity {
+    SEVERITY_UNSPECIFIED = 0;
+    SEVERITY_INFO = 1;
+    SEVERITY_LOW = 2;
+    SEVERITY_MEDIUM = 3;
+    SEVERITY_HIGH = 4;
+    SEVERITY_CRITICAL = 5;
+}
+
+enum Verdict {
+    VERDICT_UNSPECIFIED = 0;
+    VERDICT_BENIGN = 1;
+    VERDICT_SUSPICIOUS = 2;
+    VERDICT_MALICIOUS = 3;
+    VERDICT_FALSE_POSITIVE = 4;
+    VERDICT_UNKNOWN = 5;
+}
+
+enum ThreatCategory {
+    THREAT_CATEGORY_UNSPECIFIED = 0;
+    THREAT_CATEGORY_MALWARE = 1;
+    THREAT_CATEGORY_BOTNET = 2;
+    THREAT_CATEGORY_C2 = 3;
+    THREAT_CATEGORY_EXPLOIT = 4;
+    THREAT_CATEGORY_PHISHING = 5;
+    THREAT_CATEGORY_SPAM = 6;
+}
+
+enum TLP {
+    TLP_UNSPECIFIED = 0;
+    TLP_CLEAR = 1;
+    TLP_GREEN = 2;
+    TLP_AMBER = 3;
+    TLP_AMBER_STRICT = 4;
+    TLP_RED = 5;
+}
+
+enum KillChainPhase {
+    KILL_CHAIN_PHASE_UNSPECIFIED = 0;
+    KILL_CHAIN_PHASE_RECONNAISSANCE = 1;
+    KILL_CHAIN_PHASE_WEAPONIZATION = 2;
+    KILL_CHAIN_PHASE_DELIVERY = 3;
+    KILL_CHAIN_PHASE_EXPLOITATION = 4;
+    KILL_CHAIN_PHASE_INSTALLATION = 5;
+    KILL_CHAIN_PHASE_COMMAND_AND_CONTROL = 6;
+    KILL_CHAIN_PHASE_ACTIONS_ON_OBJECTIVES = 7;
+}
+
+enum EnrichmentSource {
+    ENRICHMENT_SOURCE_UNSPECIFIED = 0;
+    ENRICHMENT_SOURCE_VIRUSTOTAL = 1;
+    ENRICHMENT_SOURCE_ABUSEIPDB = 2;
+    ENRICHMENT_SOURCE_OTX = 3;
+    ENRICHMENT_SOURCE_HYBRID_ANALYSIS = 4;
+}
+
+enum EnrichmentStatus {
+    ENRICHMENT_STATUS_UNSPECIFIED = 0;
+    ENRICHMENT_STATUS_PROCESSING = 2;
+    ENRICHMENT_STATUS_COMPLETED = 3;
+    ENRICHMENT_STATUS_FAILED = 4;
+    ENRICHMENT_STATUS_PARTIAL = 5;
+}
+
+enum RelationType {
+    RELATION_TYPE_UNSPECIFIED = 0;
+    RELATION_TYPE_SAME_CAMPAIGN = 1;
+    RELATION_TYPE_SAME_THREAT_ACTOR = 2;
+    RELATION_TYPE_SAME_FAMILY = 3;
+    RELATION_TYPE_RESOLVES_TO = 4;
+    RELATION_TYPE_COMMUNICATES_WITH = 5;
+    RELATION_TYPE_DOWNLOADED_FROM = 6;
+    RELATION_TYPE_DROPS = 7;
+}
+
+message Pagination {
+    int32 page = 1;
+    int32 page_size = 2;
+    int32 total_count = 3;
+    int32 total_pages = 4;    
+}
+
+message Error {
+    string code = 1;
+    string message = 2;
+    map<string, string> details = 3;
+}
+
+message SortOptions {
+    repeated string sort_by = 1;    
+    bool sort_desc = 2;   
+}

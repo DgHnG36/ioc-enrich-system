@@ -1,0 +1,96 @@
+syntax = "proto3";
+
+package ioc.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "ioc/v1/common.proto";
+
+option go_package = "github.com/DgHnG36/ioc_enrichment_service/shared/go/ioc/v1;iocv1";
+
+/* IOC MODELS */
+
+message IoC {
+    string id = 1;
+    IoCType type = 2;
+    string value = 3;
+    Verdict verdict = 4;
+    Severity severity = 5;
+    string source = 6;
+    string description = 7;
+    google.protobuf.Timestamp created_at = 8;
+    google.protobuf.Timestamp updated_at = 9;
+    google.protobuf.Timestamp expires_at = 10;
+    repeated string tags = 11;
+    ThreatContext threat_context = 12;
+    EnrichmentSummary enrichment_summary = 13;
+    IoCMetadata metadata = 14;
+    bool is_active = 15;
+    int32 detection_count = 16;
+}
+
+message ThreatContext {
+    float confidence_score = 1;
+    repeated ThreatCategory categories = 2;
+    KillChainPhase kill_chain_phase = 3;
+    repeated string threat_actors = 4;
+    repeated string campaigns = 5;
+}
+
+message EnrichmentSummary {
+    int32 total_sources = 1;
+    int32 malicious_count = 2;
+    int32 suspicious_count = 3;
+    int32 benign_count = 4;
+    google.protobuf.Timestamp last_enriched = 5;
+    map<string, SourceResult> source_details = 6;
+}
+
+message SourceResult {
+    string source_name = 1;
+    bool is_malicious = 2;
+    float score = 3;
+    string verdict = 4;
+    google.protobuf.Timestamp checked_at = 5;
+    google.protobuf.Struct raw_data = 6;
+}
+
+message IoCMetadata {
+    google.protobuf.Struct custom_fields = 1;
+    string created_by = 2;
+    string updated_by = 3;
+}
+
+message RelatedIoC {
+    string ioc_id = 1;
+    string value = 2;
+    IoCType type = 3;
+    RelationType relation_type = 4;
+    float similarity_score = 5;
+    string source = 6;
+    string description = 7;
+}
+
+message IoCFilter {
+    string search_query = 1;
+    IoCType type = 2;
+    Severity severity = 3;
+    Verdict verdict = 4;
+    string source = 5;
+    repeated string tags = 6;
+    KillChainPhase kill_chain_phase = 7;
+    bool is_active = 8;
+    google.protobuf.Timestamp start_date = 9;
+    google.protobuf.Timestamp end_date = 10;
+}
+
+message IoCStatistics {
+    int32 total_iocs = 1;
+    int32 active_iocs = 2;
+    map<string, int32> by_type = 3;
+    map<string, int32> by_severity = 4;
+    map<string, int32> by_verdict = 5;
+    google.protobuf.Timestamp generated_at = 6;
+}
+
+

@@ -1,0 +1,104 @@
+syntax = "proto3";
+
+package enrichment.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+
+option go_package = "github.com/DgHnG36/ioc_enrichment_service/shared/go/enrichment/v1;enrichmentv1";
+
+enum Verdict {
+    VERDICT_UNSPECIFIED = 0;
+    VERDICT_BENIGN = 1;
+    VERDICT_SUSPICIOUS = 2;
+    VERDICT_MALICIOUS = 3;
+    VERDICT_FALSE_POSITIVE = 4;
+    VERDICT_UNKNOWN = 5;
+}
+
+enum ThreatCategory {
+    THREAT_CATEGORY_UNSPECIFIED = 0;
+    THREAT_CATEGORY_MALWARE = 1;
+    THREAT_CATEGORY_BOTNET = 2;
+    THREAT_CATEGORY_C2 = 3;
+    THREAT_CATEGORY_EXPLOIT = 4;
+    THREAT_CATEGORY_PHISHING = 5;
+    THREAT_CATEGORY_SPAM = 6;
+}
+
+enum EnrichmentSource {
+    ENRICHMENT_SOURCE_UNSPECIFIED = 0;
+    ENRICHMENT_SOURCE_VIRUSTOTAL = 1;
+    ENRICHMENT_SOURCE_ABUSEIPDB = 2;
+    ENRICHMENT_SOURCE_OTX = 3;
+    ENRICHMENT_SOURCE_HYBRID_ANALYSIS = 4;
+}
+enum EnrichmentStatus {
+    ENRICHMENT_STATUS_UNSPECIFIED = 0;
+    ENRICHMENT_STATUS_PROCESSING = 2;
+    ENRICHMENT_STATUS_COMPLETED = 3;
+    ENRICHMENT_STATUS_FAILED = 4;
+    ENRICHMENT_STATUS_PARTIAL = 5;
+}
+
+
+message ThreatIntelData {
+    EnrichmentSource source = 1;
+    float confidence = 2;
+    google.protobuf.Timestamp reported_at = 3;
+    google.protobuf.Struct raw_data = 4;
+}
+
+message AggregatedScore {
+    float overall_score = 1;
+    Verdict verdict = 2;
+    int32 total_sources = 3;
+    int32 malicious_count = 4;
+}
+
+message IPEnrichmentData {
+    string ip = 1;
+    string country = 2;
+    string asn = 3;
+    bool is_proxy = 4;
+    bool is_tor = 5;
+    bool is_vpn = 6;
+}
+
+message DomainEnrichmentData {
+    string domain = 1;
+    google.protobuf.Timestamp creation_date = 2;
+    string registrar = 3;
+    repeated string resolved_ips = 4;
+    bool has_ssl = 5;
+}
+
+message HashEnrichmentData {
+    string hash = 1;
+    string hash_type = 2;
+    int64 file_size = 3;
+    string file_type = 4;
+    bool is_packed = 5;
+}
+
+message URLEnrichmentData {
+    string url = 1;
+    string final_url = 2;
+    int32 redirect_count = 3;
+    bool has_phishing_indicators = 4;
+}
+
+message FilePathEnrichmentData {
+    string path = 1;
+    string extension = 3;
+    bool is_system_path = 4;   
+    bool is_temp_path = 5;
+    repeated string known_associated_malware = 6;
+}
+
+message SourceHealth {
+    EnrichmentSource source = 1;
+    bool is_healthy = 2;
+    string error_message = 3;
+    google.protobuf.Timestamp last_checked = 4;
+}

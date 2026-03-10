@@ -1,0 +1,145 @@
+syntax = "proto3";
+
+package ioc.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto";
+import "ioc/v1/ioc.proto";
+import "ioc/v1/common.proto";
+
+option go_package = "github.com/DgHnG36/ioc_enrichment_service/shared/go/ioc/v1;iocv1";
+
+/* IOC SERVICE */
+
+service IoCService {
+    rpc BatchUpsertIoCs(BatchUpsertIoCsRequest) returns (BatchUpsertIoCsResponse);
+    rpc GetIoC(GetIoCRequest) returns (GetIoCResponse);
+    rpc GetByValue(GetByValueRequest) returns (GetByValueResponse);
+    rpc DeleteIoCs(DeleteIoCsRequest) returns (DeleteIoCsResponse);
+    rpc FindIoCs(FindIoCsRequest) returns (FindIoCsResponse);
+    rpc GetIoCStatistics(GetIoCStatisticsRequest) returns (GetIoCStatisticsResponse);
+    rpc IncrementDetectionCount(IncrementDetectionCountRequest) returns (google.protobuf.Empty);
+    rpc GetExpired(GetExpiredRequest) returns (GetExpiredResponse);
+    rpc EnrichIoC(EnrichIoCRequest) returns (EnrichIoCResponse);
+    rpc GetEnrichmentStatus(GetEnrichmentStatusRequest) returns (GetEnrichmentStatusResponse);
+    rpc GetRelatedIoCs(GetRelatedIoCsRequest) returns (GetRelatedIoCsResponse);
+}
+
+message BatchUpsertIoCsRequest {
+    repeated IoC iocs = 1;
+    bool auto_enrich = 2;
+}
+
+message BatchUpsertIoCsResponse {
+    repeated string upserted_ids = 1;
+    string message = 2;
+    int32 total_success = 3;
+    int32 total_failed = 4;
+}
+
+message GetIoCRequest {
+    oneof identifier {
+        string id = 1;
+        IoCIdentifier value_identifier = 2;
+    }
+    bool include_related = 3;
+    repeated RelationType relation_types = 4;
+}
+
+message IoCIdentifier {
+    IoCType iocType = 1;
+    string value = 2;
+}
+
+message GetIoCResponse {
+    IoC ioc = 1;
+    repeated RelatedIoC related_iocs = 2;
+}
+
+message GetByValueRequest {
+    IoCType type = 1;
+    string value = 2;
+    bool include_related = 3;
+    repeated RelationType relation_types = 4;
+}
+
+message GetByValueResponse {
+    IoC ioc = 1;
+    repeated RelatedIoC related_iocs = 2;
+}
+
+message DeleteIoCsRequest {
+    repeated string ids = 1;
+    string reason = 2;
+}
+
+message DeleteIoCsResponse {
+    int32 deleted_count = 1;
+    string message = 2;
+}
+
+message FindIoCsRequest {
+    Pagination pagination = 1;
+    IoCFilter filter = 2;
+    SortOptions sort_options = 3;
+}
+
+message FindIoCsResponse {
+    repeated IoC iocs = 1;
+    Pagination pagination = 2;
+}
+
+message GetIoCStatisticsRequest {
+    IoCFilter filter = 1;
+}
+
+message GetIoCStatisticsResponse {
+    IoCStatistics statistics = 1;
+}
+
+message IncrementDetectionCountRequest {
+    repeated string ioc_ids = 1;
+}
+
+message GetExpiredRequest {
+    int32 limit = 1;
+}
+
+message GetExpiredResponse {
+    repeated IoC expired_iocs = 1;
+    int32 total = 2;
+}
+
+message EnrichIoCRequest {
+    oneof identifier {
+        string ioc_id = 1;
+        IoCIdentifier value_identifier = 2;
+    }
+    repeated string target_sources = 3;
+    bool force_refresh = 4;
+}
+
+message EnrichIoCResponse {
+    string ioc_id = 1;
+    string message = 2;
+    bool is_cached_result = 3;
+}
+
+message GetEnrichmentStatusRequest {
+    string ioc_id = 1;
+}
+
+message GetEnrichmentStatusResponse {
+    EnrichmentStatus status = 1;
+    float progress_percent = 2;
+    google.protobuf.Timestamp last_updated = 3;
+}
+
+message GetRelatedIoCsRequest {
+    string ioc_id = 1;
+    RelationType relation_type = 2;
+}
+
+message GetRelatedIoCsResponse {
+    repeated RelatedIoC related_iocs = 1;
+}

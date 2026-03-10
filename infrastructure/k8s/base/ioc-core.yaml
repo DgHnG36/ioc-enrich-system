@@ -1,0 +1,122 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ioc-core
+  namespace: ioc-enrich
+  labels:
+    app: ioc-core
+spec:
+  type: ClusterIP
+  ports:
+    - port: 50051
+      targetPort: 50051
+      name: grpc
+  selector:
+    app: ioc-core
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ioc-core
+  namespace: ioc-enrich
+  labels:
+    app: ioc-core
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ioc-core
+  template:
+    metadata:
+      labels:
+        app: ioc-core
+    spec:
+      containers:
+        - name: ioc-core
+          image: ioc-core:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 50051
+          env:
+            - name: APP_ENV
+              value: production
+            - name: APP_LOG_LEVEL
+              value: info
+            # Database
+            - name: DB_HOST
+              value: postgres
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: DB_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: db-secrets
+                  key: DB_PASSWORD
+            - name: DB_DATABASE
+              value: ioc_enrichment_db
+            - name: DB_SSL_MODE
+              value: disable
+            - name: DB_MAX_OPEN_CONNS
+              value: "50"
+            - name: DB_MAX_IDLE_CONNS
+              value: "25"
+            - name: DB_CONN_MAX_LIFETIME
+              value: 1h
+            - name: DB_CONN_MAX_IDLE_TIME
+              value: 30m
+            - name: DB_CONNECT_TIMEOUT
+              value: 10s
+            # Redis
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: REDIS_PASSWORD
+            - name: REDIS_DB
+              value: "0"
+            - name: REDIS_POOL_SIZE
+              value: "100"
+            - name: REDIS_MIN_IDLE_CONNS
+              value: "20"
+            - name: REDIS_MAX_RETRIES
+              value: "3"
+            # gRPC
+            - name: GRPC_HOST
+              value: "0.0.0.0"
+            - name: GRPC_PORT
+              value: "50051"
+            # Enrichment service
+            - name: ENRICH_SVC_ADDRESS
+              value: ti-enrichment:50052
+            - name: ENRICH_SVC_TIMEOUT
+              value: 30s
+            - name: ENRICH_SVC_MAX_RETRIES
+              value: "3"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: 50051
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            tcpSocket:
+              port: 50051
+            initialDelaySeconds: 15
+            periodSeconds: 15
+            timeoutSeconds: 3

@@ -1,0 +1,11 @@
+go 1.24.2
+
+use (
+	./services/ioc-core
+	./services/ioc-api-gateway
+	./shared/go
+	./test
+	./test/unit/services/ioc-api-gateway
+	./test/unit/services/commons
+	./test/unit/services/ioc-core
+)

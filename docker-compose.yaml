@@ -1,0 +1,181 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ioc_enrich_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ioc_enrichment_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ioc_enrichment_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ioc_network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: ioc_enrich_redis
+    restart: always
+    ports:
+      - "63379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    networks:
+      - ioc_network
+  # Ti-Enrichment Service
+  ti-enrichment:
+    build:
+      context: .
+      dockerfile: ./services/ti-enrichment/Dockerfile
+    container_name: ti_enrichment_service
+    restart: on-failure
+    ports:
+      - "50052:50052"
+    environment:
+      PYTHONPATH: /app
+      APP_ENV: development
+      APP_ENABLE_METRICS: "true"
+      VIRUSTOTAL_API_KEY: your_virustotal_api_key_here
+      VIRUSTOTAL_ENABLED: "true"
+      ABUSEIPDB_API_KEY: your_abuseipdb_api_key_here
+      ABUSEIPDB_ENABLED: "true"
+      OTX_API_KEY: your_otx_api_key_here
+      OTX_ENABLED: "true"
+      HYBRID_ANALYSIS_API_KEY: your_hybrid_analysis_api_key_here
+      HYBRID_ANALYSIS_ENABLED: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_DB: 0
+      CACHE_TTL_SECONDS: 86400
+      CACHE_ENABLED: "true"
+      GRPC_HOST: 0.0.0.0
+      GRPC_PORT: 50052
+      GRPC_MAX_CONCURRENT_STREAMS: 100
+      GRPC_KEEPALIVE_TIME_MS: 30000
+      GRPC_KEEPALIVE_TIMEOUT_MS: 10000
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+      LOG_OUTPUT: stdout
+      RATE_LIMIT_ENABLED: "true"
+      RATE_LIMIT_RPM: 300
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - ioc_network
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 50052), timeout=5)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # IOC Core Service
+  ioc-core:
+    build:
+      context: .
+      dockerfile: ./services/ioc-core/Dockerfile
+    container_name: ioc_core_service
+    restart: on-failure
+    ports:
+      - "50051:50051"
+    environment:
+      APP_ENV: development
+      APP_LOG_LEVEL: info
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: ioc_enrichment_db
+      DB_SSL_MODE: disable
+      DB_MAX_OPEN_CONNS: 200
+      DB_MAX_IDLE_CONNS: 50
+      DB_CONN_MAX_LIFETIME: 1h
+      DB_CONN_MAX_IDLE_TIME: 30m
+      DB_CONNECT_TIMEOUT: 10s
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_DB: 0
+      REDIS_POOL_SIZE: 200
+      REDIS_MIN_IDLE_CONNS: 30
+      REDIS_MAX_RETRIES: 3
+      GRPC_HOST: 0.0.0.0
+      GRPC_PORT: 50051
+      ENRICH_SVC_ADDRESS: ti-enrichment:50052
+      ENRICH_SVC_TIMEOUT: 30s
+      ENRICH_SVC_MAX_RETRIES: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ti-enrichment:
+        condition: service_healthy
+    networks:
+      - ioc_network
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "50051"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # IOC API Gateway Service
+  ioc-api-gateway:
+    build:
+      context: .
+      dockerfile: ./services/ioc-api-gateway/Dockerfile
+    container_name: ioc_api_gateway_service
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      GRPC_CORE_ADDR: ioc-core:50051
+      REDIS_ADDR: redis:6379
+      REDIS_PASSWORD: ""
+      JWT_SECRET: my-super-secret-key-change-in-production
+      ALLOWED_ORIGINS: "*"
+      RATE_LIMIT_MAX_REQ: 1000
+      RATE_LIMIT_WINDOW_SEC: 60
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ioc-core:
+        condition: service_healthy
+      ti-enrichment:
+        condition: service_healthy
+    networks:
+      - ioc_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pg_data:
+  redis_data:
+
+networks:
+  ioc_network:
+    driver: bridge

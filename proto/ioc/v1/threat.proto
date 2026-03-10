@@ -1,0 +1,73 @@
+syntax = "proto3";
+
+package ioc.v1;
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "ioc/v1/common.proto";
+import "ioc/v1/ioc.proto";
+
+option go_package = "github.com/DgHnG36/ioc_enrichment_service/shared/go/ioc/v1;iocv1";
+
+/* THREAT MODELS */
+
+message Threat {
+    string id = 1;
+    string name = 2;
+    ThreatCategory category = 3;
+    Severity severity = 4;
+    string description = 5;
+    repeated IoC indicators = 6;
+    repeated string campaigns = 8;
+    repeated string threat_actors = 9;
+    float confidence = 10;
+    ThreatMetadata metadata = 11;
+    repeated string tags = 12;
+    bool is_active = 13;
+    google.protobuf.Timestamp created_at = 14;
+    google.protobuf.Timestamp updated_at = 15;
+}
+
+message ThreatMetadata {
+    repeated string ttps = 1;
+    repeated string references = 2;
+    google.protobuf.Struct custom_fields = 3;
+    string created_by = 4;
+    string updated_by = 5;
+}
+
+message ThreatCorrelation {
+    string threat_id = 1;
+    string ioc_id = 2;
+    string source = 3;
+    google.protobuf.Timestamp created_at = 4;
+}
+
+message ThreatIntelligence {
+    EnrichmentSource source = 1;
+    string threat_id = 2;
+    float confidence = 3;
+    google.protobuf.Timestamp reported_at = 4;
+    google.protobuf.Struct raw_data = 5;
+}
+
+message ThreatFilter {
+    string search_query = 1;
+    ThreatCategory category = 2;
+    Severity severity = 3;
+    string campaign = 4;
+    string threat_actor = 5;
+    bool is_active = 6;
+    google.protobuf.Timestamp start_date = 7;
+    google.protobuf.Timestamp end_date = 8;
+}
+
+message ThreatStatistics {
+    int32 total_threats = 1;
+    int32 active_threats = 2;
+    map<string, int32> by_category = 3;
+    map<string, int32> by_severity = 4;
+    repeated string top_campaigns = 5;
+    repeated string top_threat_actors = 6;
+    google.protobuf.Timestamp generated_at = 7;
+}

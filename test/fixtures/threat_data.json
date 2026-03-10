@@ -1,0 +1,79 @@
+{
+  "test_threats": [
+    {
+      "name": "APT-001-TrojanX",
+      "description": "Advanced persistent threat group using TrojanX malware",
+      "category": "malware",
+      "severity": "critical",
+      "confidence": 0.95,
+      "tags": ["apt", "trojan", "test"],
+      "threat_actors": ["Group-Alpha", "Cyber-Collective-1"],
+      "campaigns": ["Operation-Stealth-2026", "Campaign-Red"],
+      "metadata": {
+        "mitre_tactics": ["T1566", "T1203"],
+        "references": ["https://example.com/apt-001"]
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "name": "Botnet-DarkNet-002",
+      "description": "Large-scale botnet infrastructure used for DDoS",
+      "category": "botnet",
+      "severity": "high",
+      "confidence": 0.88,
+      "tags": ["botnet", "ddos", "test"],
+      "threat_actors": ["Botnet-Operators-B"],
+      "campaigns": ["DDoS-Campaign-2026"],
+      "metadata": {
+        "mitre_tactics": ["T1133", "T1570"],
+        "references": ["https://example.com/botnet"]
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "name": "C2-Server-Network-003",
+      "description": "Command and control infrastructure for malware distribution",
+      "category": "c2",
+      "severity": "critical",
+      "confidence": 0.92,
+      "tags": ["c2", "malware", "infrastructure", "test"],
+      "threat_actors": ["C2-Operator-Group"],
+      "campaigns": ["Malware-Distribution-2026"],
+      "metadata": {
+        "mitre_tactics": ["T1071", "T1001"],
+        "references": ["https://example.com/c2-network"]
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "name": "Phishing-Campaign-WebShell",
+      "description": "Coordinated phishing campaign delivering WebShell payloads",
+      "category": "phishing",
+      "severity": "high",
+      "confidence": 0.85,
+      "tags": ["phishing", "webshell", "social-eng", "test"],
+      "threat_actors": ["Phishing-Collective"],
+      "campaigns": ["Phishing-Wave-March-2026"],
+      "metadata": {
+        "mitre_tactics": ["T1566", "T1190"],
+        "references": ["https://example.com/phishing"]
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "name": "Exploit-Kit-SilverBullet",
+      "description": "Active exploit kit targeting unpatched vulnerabilities",
+      "category": "exploit",
+      "severity": "critical",
+      "confidence": 0.93,
+      "tags": ["exploit", "vulnerability", "test"],
+      "threat_actors": ["Exploit-Authors-C"],
+      "campaigns": ["Exploit-Campaign"],
+      "metadata": {
+        "mitre_tactics": ["T1190", "T1105"],
+        "references": ["https://example.com/silverb exploit"]
+      },
+      "created_by": "integration-test"
+    }
+  ]
+}

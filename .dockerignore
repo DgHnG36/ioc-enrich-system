@@ -1,0 +1,33 @@
+# VCS and editor
+.git
+.gitignore
+.vscode
+.idea
+
+# Python caches / virtual env
+**/__pycache__
+**/*.pyc
+**/*.pyo
+.venv
+venv
+
+# Node modules
+**/node_modules
+
+# Logs and local outputs
+**/*.log
+**/*_results.json
+coverage.out
+
+# Test and docs artifacts (not needed in runtime images)
+test/
+docs/
+notes/
+figures/
+scripts/
+data_sample/
+
+# Local infra files
+.env
+.env.*
+docker-compose*.yaml

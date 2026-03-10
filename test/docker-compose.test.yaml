@@ -1,0 +1,187 @@
+services:
+  # PostgreSQL Database for IoC Core
+  postgres:
+    image: postgres:15-alpine
+    container_name: ioc-postgres-test
+    restart: always
+    shm_size: 512m
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: ioc_enrichment_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../init/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: postgres -c max_connections=300 -c shared_buffers=256MB -c work_mem=4MB
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ioc_enrichment_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ioc-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: ioc-redis-test
+    restart: always
+    ports:
+      - "63379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --loglevel warning
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 30s
+    networks:
+      - ioc-network
+
+  # TI Enrichment Service
+  ti-enrichment:
+    build:
+      context: ..
+      dockerfile: services/ti-enrichment/Dockerfile
+    container_name: ti-enrichment-test
+    restart: on-failure
+    ports:
+      - "50052:50052"
+    environment:
+      PYTHONPATH: /app
+      APP_ENV: development
+      APP_ENABLE_METRICS: "true"
+      VIRUSTOTAL_API_KEY: 043345249ee8ca41be5c5f82931b1fa9ed1f975f6534df852ab9c4b199043357
+      VIRUSTOTAL_ENABLED: "true"
+      ABUSEIPDB_API_KEY: dc16d141a0702f72314f9bbe011df8756430da523dca311467e59ec7a987e4400df52ce5cd224ee0
+      ABUSEIPDB_ENABLED: "true"
+      OTX_API_KEY: 4fd270b858b0383ef36385b8fc8250dc0ca98805efc5a4f33bf8b8f1e65c5253
+      OTX_ENABLED: "true"
+      HYBRID_ANALYSIS_API_KEY: kstum1d55d1d8628bw1tbl05c00c65c9s8vx24vga1bc75375gqa7au4e619c02a
+      HYBRID_ANALYSIS_ENABLED: "true"
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_DB: 0
+      CACHE_TTL_SECONDS: 86400
+      CACHE_ENABLED: "true"
+      GRPC_HOST: 0.0.0.0
+      GRPC_PORT: 50052
+      GRPC_MAX_CONCURRENT_STREAMS: 100
+      GRPC_KEEPALIVE_TIME_MS: 30000
+      GRPC_KEEPALIVE_TIMEOUT_MS: 10000
+      LOG_LEVEL: debug
+      LOG_FORMAT: json
+      LOG_OUTPUT: stdout
+      RATE_LIMIT_ENABLED: "true"
+      RATE_LIMIT_RPM: 300
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('localhost', 50052), timeout=5)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ioc-network
+
+  # IoC Core Service
+  ioc-core:
+    build:
+      context: ..
+      dockerfile: services/ioc-core/Dockerfile
+    container_name: ioc-core-test
+    restart: on-failure
+    ports:
+      - "50051:50051"
+    environment:
+      APP_ENV: development
+      APP_LOG_LEVEL: debug
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_DATABASE: ioc_enrichment_db
+      DB_SSL_MODE: disable
+      DB_MAX_OPEN_CONNS: 50
+      DB_MAX_IDLE_CONNS: 25
+      DB_CONN_MAX_LIFETIME: 1h
+      DB_CONN_MAX_IDLE_TIME: 30m
+      DB_CONNECT_TIMEOUT: 10s
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_DB: 0
+      REDIS_POOL_SIZE: 200
+      REDIS_MIN_IDLE_CONNS: 30
+      REDIS_MAX_RETRIES: 3
+      GRPC_HOST: 0.0.0.0
+      GRPC_PORT: 50051
+      ENRICH_SVC_ADDRESS: ti-enrichment:50052
+      ENRICH_SVC_TIMEOUT: 30s
+      ENRICH_SVC_MAX_RETRIES: 3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ti-enrichment:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "50051"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ioc-network
+
+  # IoC API Gateway
+  ioc-api-gateway:
+    build:
+      context: ..
+      dockerfile: services/ioc-api-gateway/Dockerfile
+    container_name: ioc-api-gateway-test
+    restart: on-failure
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      GRPC_CORE_ADDR: ioc-core:50051
+      REDIS_ADDR: redis:6379
+      REDIS_PASSWORD: ""
+      JWT_SECRET: test-secret-key-do-not-use-in-production
+      ALLOWED_ORIGINS: "*"
+      RATE_LIMIT_MAX_REQ: 5000
+      RATE_LIMIT_WINDOW_SEC: 60
+      HTTP_READ_TIMEOUT: 30s
+      HTTP_WRITE_TIMEOUT: 60s
+      HTTP_IDLE_TIMEOUT: 120s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      ioc-core:
+        condition: service_healthy
+      ti-enrichment:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ioc-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  ioc-network:
+    driver: bridge

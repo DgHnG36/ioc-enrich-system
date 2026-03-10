@@ -1,0 +1,59 @@
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Git / local env / Python virtualenv
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+env/
+
+# Node / JS
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Go
+bin/
+dist/
+coverage.out
+*.test
+
+# Build artifacts
+build/
+tmp/
+*.tmp
+*.cache
+
+# Docker / compose local state
+*.pid
+
+# Test reports / generated perf outputs
+test/performance/*_results.json
+test/integration/.pytest_cache/
+data_sample/
+
+# Internal docs / notes / figures (not for git)
+docs/
+notes/
+figures/
+help.md

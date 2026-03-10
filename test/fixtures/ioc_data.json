@@ -1,0 +1,232 @@
+{
+  "test_iocs": [
+    {
+      "type": "ip",
+      "value": "192.168.1.100",
+      "severity": "high",
+      "source": "wazuh",
+      "description": "Malicious IP address used for C2 communication",
+      "tags": ["malware", "c2", "test"],
+      "metadata": {
+        "country": "US",
+        "asn": "AS13335"
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "ip",
+      "value": "10.0.1.5",
+      "severity": "medium",
+      "source": "crowdstrike",
+      "description": "Suspicious IP observed in network traffic",
+      "tags": ["suspicious", "network", "test"],
+      "metadata": {
+        "country": "DE",
+        "asn": "AS12345",
+        "is_proxy": false,
+        "is_tor": true
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "ip",
+      "value": "10.10.27.141",
+      "severity": "low",
+      "source": "sysmon",
+      "description": "Unusual IP address seen in system logs",
+      "tags": ["unusual", "system-logs", "test"],
+      "metadata": {
+        "country": "FR",
+        "asn": "AS54321",
+        "is_vpn": true
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "domain",
+      "value": "malicious-test-domain.com",
+      "severity": "high",
+      "source": "splunk",
+      "description": "Malicious phishing domain used for credential theft",
+      "tags": ["phishing", "credential-theft", "test"],
+      "metadata": {
+        "registrar": "test_registrar",
+        "creation_date": "2026-02-20"
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "domain",
+      "value": "climate.com.vn",
+      "severity": "info",
+      "source": "ossec",
+      "description": "Domain unknown in system logs",
+      "tags": ["unknown", "system-log", "test"],
+      "metadata": {
+        "registrar": "unknown_registrar",
+        "creation_date": "2026-02-25"
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "domain",
+      "value": "sandbox-malicious-domain.example",
+      "severity": "medium",
+      "source": "splunk",
+      "description": "Malicious domain in challenge environment",
+      "tags": ["malicious", "challenge", "test"],
+      "metadata": {
+        "registrar": "challenge_registrar",
+        "creation_date": "2026-02-28"
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "md5",
+      "value": "d41d8cd98f00b204e9800998ecf8427e",
+      "source": "virustotal",
+      "severity": "high",
+      "description": "Known suspicious md5 hash",
+      "tags": ["malware", "trojan", "test"],
+      "metadata": {
+        "file_type": "PE32",
+        "size": 524288
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "sha1",
+      "value": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+      "source": "wazuh",
+      "severity": "info",
+      "description": "sha1 hash from logs",
+      "tags": ["hash", "system-logs", "test"],
+      "metadata": {
+        "file_type": "unknown",
+        "size": 0
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "sha256",
+      "value": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source": "virustotal",
+      "severity": "high",
+      "description": "sha256 hash with suspicious behavior",
+      "tags": ["suspicious-file", "malware", "test"],
+      "metadata": {
+        "file_type": "PE32",
+        "size": 1048576
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "url",
+      "value": "http://malicious-test-site.com/payload.exe",
+      "severity": "high",
+      "source": "crowdstrike",
+      "description": "Malicious URL hosting payload",
+      "tags": ["malware", "payload", "test"],
+      "metadata": {
+        "content_type": "application/x-dosexec",
+        "size": 204800
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "url",
+      "value": "https://suspicious-test-site.com/download",
+      "severity": "medium",
+      "source": "splunk",
+      "description": "Suspicious URL observed in traffic",
+      "tags": ["suspicious", "network-traffic", "test"],
+      "metadata": {
+        "content_type": "text/html",
+        "size": 10240
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "url",
+      "value": "http://benign-test-site.com/info",
+      "severity": "low",
+      "source": "ossec",
+      "description": "Benign URL observed in logs",
+      "tags": ["benign", "system-logs", "test"],
+      "metadata": {
+        "content_type": "text/html",
+        "size": 5120
+      },
+      "created_by": "integration-test"
+    },
+    {
+      "type": "file_path",
+      "value": "C:\\malicious\\payload.exe",
+      "severity": "high",
+      "source": "sysmon",
+      "description": "Malicious file path observed in endpoint logs",
+      "tags": ["malware", "payload", "test"],
+      "metadata": {
+        "file_type": "PE32",
+        "size": 204800,
+        "hashes": {
+          "md5": "d41d8cd98f00b204e9800998ecf8427e",
+          "sha1": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "created_by": "integration-test"
+    }
+  ],
+  "batch_test_iocs": [
+    {
+      "type": "ip",
+      "value": "10.0.0.1",
+      "description": "Batch test IP 1",
+      "severity": "low",
+      "source": "wazuh",
+      "tags": ["test"]
+    },
+    {
+      "type": "ip",
+      "value": "10.0.0.2",
+      "description": "Batch test IP 2",
+      "severity": "medium",
+      "source": "crowdstrike",
+      "tags": ["test"]
+    },
+    {
+      "type": "domain",
+      "value": "test-domain-1.com",
+      "description": "Batch test domain 1",
+      "severity": "low",
+      "source": "splunk",
+      "tags": ["test"]
+    }
+  ],
+  "expired_iocs": [
+    {
+      "type": "ip",
+      "value": "192.168.255.1",
+      "description": "Expired test IoC",
+      "severity": "medium",
+      "source": "wazuh",
+      "expires_at": "2026-03-01T00:00:00Z",
+      "tags": ["expired", "test"]
+    }
+  ],
+  "related_iocs": [
+    {
+      "source_ioc": "192.168.1.100",
+      "related_ioc": "malicious-test-domain.com",
+      "relation_type": "resolves_to",
+      "similarity_score": 0.9
+    },
+    {
+      "source_ioc": "malicious-test-domain.com",
+      "related_ioc": "http://malicious-test-site.com/payload.exe",
+      "relation_type": "hosts",
+      "similarity_score": 0.85
+    }
+  ]
+}

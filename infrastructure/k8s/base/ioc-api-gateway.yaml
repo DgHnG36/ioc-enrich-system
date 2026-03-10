@@ -1,0 +1,95 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ioc-api-gateway
+  namespace: ioc-enrich
+  labels:
+    app: ioc-api-gateway
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 80
+      targetPort: 8080
+      name: http
+  selector:
+    app: ioc-api-gateway
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ioc-api-gateway
+  namespace: ioc-enrich
+  labels:
+    app: ioc-api-gateway
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ioc-api-gateway
+  template:
+    metadata:
+      labels:
+        app: ioc-api-gateway
+    spec:
+      containers:
+        - name: ioc-api-gateway
+          image: ioc-api-gateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - name: PORT
+              value: "8080"
+            - name: GRPC_CORE_ADDR
+              value: ioc-core:50051
+            # Redis
+            - name: REDIS_ADDR
+              value: redis:6379
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: REDIS_PASSWORD
+            - name: REDIS_DB
+              value: "0"
+            # Auth
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: gateway-secrets
+                  key: JWT_SECRET
+            - name: ALLOWED_ORIGIN
+              value: "*"
+            # Rate limiting
+            - name: RATE_LIMIT_MAX_REQ
+              value: "100"
+            - name: RATE_LIMIT_WINDOW_SEC
+              value: "60"
+            # HTTP timeouts
+            - name: HTTP_READ_TIMEOUT
+              value: "10s"
+            - name: HTTP_WRITE_TIMEOUT
+              value: "30s"
+            - name: HTTP_IDLE_TIMEOUT
+              value: "120s"
+          resources:
+            requests:
+              cpu: 200m
+              memory: 128Mi
+            limits:
+              cpu: "1"
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 3

@@ -1,0 +1,119 @@
+syntax = "proto3";
+
+package ioc.v1;
+
+import "ioc/v1/threat.proto";
+import "ioc/v1/common.proto";
+
+option go_package = "github.com/DgHnG36/ioc_enrichment_service/shared/go/ioc/v1;iocv1";
+
+/* THREAT SERVICE */
+
+service ThreatService {
+    rpc BatchUpsertThreats(BatchUpsertThreatsRequest) returns (BatchUpsertThreatsResponse);
+    rpc GetThreat(GetThreatRequest) returns (GetThreatResponse);
+    rpc DeleteThreats(DeleteThreatsRequest) returns (DeleteThreatsResponse);
+    rpc FindThreats(FindThreatsRequest) returns (FindThreatsResponse);
+    rpc GetThreatStatistics(GetThreatStatisticsRequest) returns (GetThreatStatisticsResponse);
+    rpc GetThreatsByIoC(GetThreatsByIoCRequest) returns (GetThreatsByIoCResponse);
+    rpc GetThreatsByTTP(GetThreatsByTTPRequest) returns (GetThreatsByTTPResponse);
+    rpc CorrelateThreat(CorrelateThreatRequest) returns (CorrelateThreatResponse);
+    rpc LinkIoCs(LinkIoCsRequest) returns (LinkIoCsResponse);
+    rpc UnlinkIoCs(UnlinkIoCsRequest) returns (UnlinkIoCsResponse);
+}
+
+message BatchUpsertThreatsRequest {
+    repeated Threat threats = 1;
+}
+
+message BatchUpsertThreatsResponse {
+    repeated string upserted_ids = 1;
+    string message = 2;
+}
+
+message GetThreatRequest {
+    oneof identifier {
+        string id = 1;
+        string name = 2;
+    }
+    bool include_indicators = 3;
+}
+
+message GetThreatResponse {
+    Threat threat = 1;
+}
+
+message DeleteThreatsRequest {
+    repeated string ids = 1;
+    string reason = 2;
+}
+
+message DeleteThreatsResponse {
+    int32 deleted_count = 1;
+    string message = 2;
+}
+
+message FindThreatsRequest {
+    Pagination pagination = 1;
+    ThreatFilter filter = 2;
+    SortOptions sort_options = 3;
+}
+
+message FindThreatsResponse {
+    repeated Threat threats = 1;
+    Pagination pagination = 2;
+}
+
+message GetThreatStatisticsRequest {
+    ThreatFilter filter = 1;
+}
+
+message GetThreatStatisticsResponse {
+    ThreatStatistics statistics = 1;
+}
+
+message GetThreatsByIoCRequest {
+    string ioc_id = 1;
+}
+
+message GetThreatsByIoCResponse {
+    repeated Threat threats = 1;
+    int32 total_count = 2;
+}
+
+message GetThreatsByTTPRequest {
+    repeated string ttps = 1;
+}
+
+message GetThreatsByTTPResponse {
+    repeated Threat threats = 1;
+    int32 total_count = 2;
+}
+
+message CorrelateThreatRequest {
+    string ioc_id = 1;
+    float min_confidence = 2;
+}
+
+message CorrelateThreatResponse {
+    repeated ThreatCorrelation correlations = 1;
+    int32 total_found = 2;
+}
+
+message LinkIoCsRequest {
+    string threat_id = 1;
+    repeated string ioc_ids = 2;
+}
+
+message LinkIoCsResponse {
+    string message = 1;
+}
+
+message UnlinkIoCsRequest {
+    string threat_id = 1;
+    repeated string ioc_ids = 2;
+}
+
+message UnlinkIoCsResponse {
+    string message = 1;
+}

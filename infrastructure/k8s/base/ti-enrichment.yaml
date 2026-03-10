@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ti-enrichment
+  namespace: ioc-enrich
+  labels:
+    app: ti-enrichment
+spec:
+  type: ClusterIP
+  ports:
+    - port: 50052
+      targetPort: 50052
+      name: grpc
+  selector:
+    app: ti-enrichment
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ti-enrichment
+  namespace: ioc-enrich
+  labels:
+    app: ti-enrichment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ti-enrichment
+  template:
+    metadata:
+      labels:
+        app: ti-enrichment
+    spec:
+      containers:
+        - name: ti-enrichment
+          image: ti-enrichment:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 50052
+          env:
+            - name: PYTHONPATH
+              value: /app
+            - name: APP_ENV
+              value: production
+            - name: APP_ENABLE_METRICS
+              value: "true"
+            # TI API Keys
+            - name: VIRUSTOTAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ti-api-keys
+                  key: VIRUSTOTAL_API_KEY
+            - name: VIRUSTOTAL_ENABLED
+              value: "true"
+            - name: ABUSEIPDB_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ti-api-keys
+                  key: ABUSEIPDB_API_KEY
+            - name: ABUSEIPDB_ENABLED
+              value: "true"
+            - name: OTX_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ti-api-keys
+                  key: OTX_API_KEY
+            - name: OTX_ENABLED
+              value: "true"
+            - name: HYBRID_ANALYSIS_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ti-api-keys
+                  key: HYBRID_ANALYSIS_API_KEY
+            - name: HYBRID_ANALYSIS_ENABLED
+              value: "true"
+            # Redis
+            - name: REDIS_HOST
+              value: redis
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: redis-secrets
+                  key: REDIS_PASSWORD
+            - name: REDIS_DB
+              value: "0"
+            - name: CACHE_TTL_SECONDS
+              value: "86400"
+            - name: CACHE_ENABLED
+              value: "true"
+            # gRPC
+            - name: GRPC_HOST
+              value: "0.0.0.0"
+            - name: GRPC_PORT
+              value: "50052"
+            - name: GRPC_MAX_CONCURRENT_STREAMS
+              value: "100"
+            - name: GRPC_KEEPALIVE_TIME_MS
+              value: "30000"
+            - name: GRPC_KEEPALIVE_TIMEOUT_MS
+              value: "10000"
+            # Rate limiting
+            - name: RATE_LIMIT_ENABLED
+              value: "true"
+            - name: RATE_LIMIT_RPM
+              value: "300"
+            # Logging
+            - name: LOG_LEVEL
+              value: info
+            - name: LOG_FORMAT
+              value: json
+            - name: LOG_OUTPUT
+              value: stdout
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: 50052
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 50052
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 5
