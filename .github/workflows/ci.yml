@@ -204,7 +204,7 @@ jobs:
       - name: Run Python integration tests
         working-directory: test
         run: |
-          pip install -r requirements.txt
+          pip install -r integration/requirements.txt
           python -m pytest integration/ti_enrichment_integration_test.py -v --tb=short 2>&1 || true
 
       - name: Collect logs on failure
