@@ -144,17 +144,11 @@ func (s *ThreatService) GetThreat(ctx context.Context, id string, name string, i
 		return nil, err
 	}
 
-	// 2. Fetch danh sách IoCs nếu được yêu cầu (Tận dụng batch Get của IoCRepo)
-	// Lưu ý: Dù mảng IndicatorIDs không còn nằm ở struct DB, nó có thể được populate từ logic khác,
-	// hoặc bạn có thể gọi thẳng iocRepo.GetByThreat(threat.ID)
-	// Để đơn giản, ta coi như repo.GetThreat đã join mảng ID hoặc ta gọi thêm query.
 	if includeIndicators {
-		// Gọi hàm lấy danh sách IoC thuộc về Threat này (Cần thêm vào IoCRepo)
 		// iocs, _ := s.iocRepo.GetByThreat(ctx, threat.ID)
 		// threat.Indicators = iocs
 	}
 
-	// 3. Cache lại nếu là Miss Cache
 	if s.config.EnableCache && s.cache != nil && id != "" {
 		go s.cache.Set(context.Background(), threat, s.config.CacheTTL)
 	}
@@ -213,15 +207,11 @@ func (s *ThreatService) LinkIoCs(ctx context.Context, threatID string, iocIDs []
 		return nil
 	}
 
-	// Dựa vào Foreign Key constraint của PostgreSQL để validate.
-	// Nếu threatID hoặc iocID không tồn tại, DB sẽ tự văng lỗi FK Violation.
-	// Ta không cần Get() từng cái lên để check tồn tại, tiết kiệm N query!
 	if err := s.repo.LinkIoCs(ctx, threatID, iocIDs...); err != nil {
 		s.logger.Error("Failed to link IoCs to Threat", err)
 		return errors.ErrInternal.Clone().WithMessage("failed to link IoCs (maybe invalid IDs)")
 	}
 
-	// Xóa Cache của Threat để lần sau Get lên nó load data mới
 	if s.config.EnableCache && s.cache != nil {
 		go s.cache.Delete(context.Background(), threatID)
 	}
@@ -268,5 +258,3 @@ func (s *ThreatService) CorrelateThreat(ctx context.Context, iocID string, minCo
 
 	return correlations, int32(len(correlations)), nil
 }
-
-// FIX LATER

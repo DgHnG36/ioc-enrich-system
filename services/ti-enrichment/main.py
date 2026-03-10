@@ -242,6 +242,19 @@ async def main():
 
 if __name__ == "__main__":
     try:
+        banner = """
+         _____ ___      _____ _   _ ____  ___ ____ _   _ __  __ _____ _   _ _____ 
+        |_   _|_ _|    | ____| \ | |  _ \|_ _/ ___| | | |  \/  | ____| \ | |_   _|
+          | |  | |_____|  _| |  \| | |_) || | |   | |_| | |\/| |  _| |  \| | | |
+          | |  | |_____| |___| |\  |  _ < | | |___|  _  | |  | | |___| |\  | | |
+          |_| |___|    |_____|_| \_|_| \_\___\____|_| |_|_|  |_|_____|_| \_| |_|
+                Powered Threat Intelligence Enrichment Service
+        """
+        print(
+            banner,
+            f"Version: {get_settings().version} | ADDRESS: {get_settings().grpc.host}:{get_settings().grpc.port}",
+            sep="\n"
+        )
         asyncio.run(main())
     except KeyboardInterrupt:
         logger.info("Service interrupted by user")
@@ -249,5 +262,3 @@ if __name__ == "__main__":
     except Exception as e:
         logger.error("Fatal error", error=str(e))
         sys.exit(1)
-
-# FIX LATER

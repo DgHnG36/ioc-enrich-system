@@ -29,7 +29,7 @@ services:
     container_name: ioc-redis-test
     restart: always
     ports:
-      - "63379:6379"
+      - "6379:6379"
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes --loglevel warning
@@ -55,13 +55,13 @@ services:
       PYTHONPATH: /app
       APP_ENV: development
       APP_ENABLE_METRICS: "true"
-      VIRUSTOTAL_API_KEY: ""
+      VIRUSTOTAL_API_KEY: "VIRUSTOTAL_PLACEHOLDER"
       VIRUSTOTAL_ENABLED: "true"
-      ABUSEIPDB_API_KEY: ""
+      ABUSEIPDB_API_KEY: "ABUSEIPDB_PLACEHOLDER"
       ABUSEIPDB_ENABLED: "true"
-      OTX_API_KEY: ""
+      OTX_API_KEY: "OTX_PLACEHOLDER"
       OTX_ENABLED: "true"
-      HYBRID_ANALYSIS_API_KEY: ""
+      HYBRID_ANALYSIS_API_KEY: "HYBRID_ANALYSIS_PLACEHOLDER"
       HYBRID_ANALYSIS_ENABLED: "true"
       REDIS_HOST: redis
       REDIS_PORT: 6379

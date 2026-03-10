@@ -28,7 +28,6 @@ func main() {
 	}
 	defer logger.Sync()
 
-	// Can be fixed later
 	port := getEnvOrDefault("PORT", "8080")
 	grpcCoreAddr := getEnvOrDefault("GRPC_CORE_ADDR", "localhost:55001")
 	redisAddr := getEnvOrDefault("REDIS_ADDR", "localhost:6379")
@@ -44,7 +43,7 @@ func main() {
 		DB:       redisDB,
 	})
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	if err := redisClient.Ping(ctx).Err(); err != nil {
 		logger.Fatal("Connect to Redis failed", zap.Error(err))
@@ -54,7 +53,7 @@ func main() {
 	// gRPC client configuration
 	grpcClientConfig := client.Config{
 		IoCCoreAddr:    grpcCoreAddr,
-		ConnectTimeout: 5 * time.Second,
+		ConnectTimeout: 30 * time.Second,
 	}
 	grpcGatewayClient, err := client.NewGatewayClient(grpcClientConfig, logger)
 	if err != nil {
@@ -107,9 +106,14 @@ func main() {
 		}
 
 		fmt.Printf(`
-		
-		
-		`) // Fix render image letter
+ ___ ___   ____        _    ____ ___       ____    _  _____ _______        __ __ __   __                               
+|_ _/ _ \ / ___|      / \  |  _ \_ _|     / ___|  / \|_   _| ____\ \      / //  \\ \ / /
+ | | | | | |   _____ / _ \ | |_) | |_____| |  _  / _ \ | | |  _|  \ \ /\ / // __ \\ v /
+ | | |_| | |__|_____/ ___ \|  __/| |_____| |_| |/ ___ \| | | |___  \ V  V // ___  \| |
+|___\___/ \____|   /_/   \_\_|  |___|     \____/_/   \_\_| |_____|  \_/\_//_/	\__\_|
+						RUNNING IoC API GATEWAY SERVER...										
+						ADDRESS: %s, PORT: %s
+		`, srv.Addr, port)
 	}()
 
 	// Graceful shutdown

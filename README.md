@@ -1,5 +1,15 @@
 # IoC Enrichment System
 
+[![CI Pipeline](https://github.com/DgHnG36/ioc-enrich-system/actions/workflows/ci.yml/badge.svg)](https://github.com/DgHnG36/ioc-enrich-system/actions/workflows/ci.yml)
+[![Go](https://img.shields.io/badge/Go-1.24-00ADD8?logo=go&logoColor=white)](https://go.dev/)
+[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](docker-compose.yaml)
+[![Kubernetes](https://img.shields.io/badge/Kubernetes-Ready-326CE5?logo=kubernetes&logoColor=white)](infrastructure/k8s/)
+[![gRPC](https://img.shields.io/badge/gRPC-Protocol%20Buffers-244c5a?logo=grpc&logoColor=white)](proto/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)](init/init.sql)
+[![Redis](https://img.shields.io/badge/Redis-7-DC382D?logo=redis&logoColor=white)](docker-compose.yaml)
+
 A microservices-based **Indicator of Compromise (IoC) management and threat intelligence enrichment** platform. The system automates IoC ingestion, enrichment from multiple threat intelligence sources, and threat correlation — exposed via a REST API gateway backed by gRPC inter-service communication.
 
 ## Architecture
@@ -277,8 +287,6 @@ The system uses 5 main tables:
 - **enrichment_cache** — Cached enrichment results
 
 See [init/init.sql](init/init.sql) for the complete schema.
-
-> For CI setup, Git push guide, and development help, see [help.md](help.md).
 
 ## Contributors
 

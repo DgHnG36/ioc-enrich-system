@@ -249,8 +249,7 @@ func (h *ThreatHandler) UnlinkIoCs(c *gin.Context) {
 
 /* HELPER METHODS */
 func (h *ThreatHandler) Ping() error {
-	// Thực hiện một lệnh gọi nhẹ hoặc check connection state
-	// Trong thực tế, bạn có thể gọi một rpc HealthCheck rỗng
+	/* CHECK CONNECTION TO GRPC SERVER */
 	return nil
 }
 

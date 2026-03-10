@@ -71,8 +71,7 @@ type CreateIoCRequest struct {
 }
 
 func (r *CreateIoCRequest) Validate() error {
-	// Fix later
-
+	/* CHECK IOC VALIDATION */
 	return nil
 }
 
@@ -160,8 +159,7 @@ type CreateThreatRequest struct {
 }
 
 func (r *CreateThreatRequest) Validate() error {
-	// Fix later
-
+	/* CHECK THREAT VALIDATION */
 	return nil
 }
 

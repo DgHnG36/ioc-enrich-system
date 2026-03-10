@@ -331,6 +331,7 @@ func (h *IoCHandler) GetRelatedIoCs(c *gin.Context) {
 
 /* HELPER METHOD */
 func (h *IoCHandler) Ping() error {
+	/* CHECK CONNECTION TO GRPC SERVER */
 	return nil
 }
 

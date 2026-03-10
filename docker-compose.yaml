@@ -27,7 +27,7 @@ services:
     container_name: ioc_enrich_redis
     restart: always
     ports:
-      - "63379:6379"
+      - "6379:6379"
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes --loglevel warning

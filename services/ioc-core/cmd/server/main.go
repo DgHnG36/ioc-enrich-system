@@ -70,8 +70,8 @@ func main() {
 
 	// Cache Repositories (Redis)
 	baseCache := redis.NewCacheRepository(redisConn.Client)
-	iocCache := redis.NewIoCCacheRepository(baseCache, cfg.App.CacheTTL)       // fix env
-	threatCache := redis.NewThreatCacheRepository(baseCache, cfg.App.CacheTTL) // fix env
+	iocCache := redis.NewIoCCacheRepository(baseCache, cfg.App.CacheTTL)
+	threatCache := redis.NewThreatCacheRepository(baseCache, cfg.App.CacheTTL)
 
 	// Adapter and services
 	enrichAdapter := application.NewEnrichAdapter(enrichClient, appLogger)
@@ -153,8 +153,16 @@ func main() {
 	}()
 
 	fmt.Printf(`
-	
-	`) // Format string when open service in terminal
+	 ___ ___    ___       ____ ___  ____  _____ 
+	|_ _/ _ \ / ___|     / ___/ _ \|  _ \| ____|
+	 | | | | | |   _____| |  | | | | |_) |  _|
+	 | | |_| | |__|_____| |__| |_| |  _ <| |___
+	|___\___/ \____|     \____\___/|_| \_\_____|
+		IOC Enrichment System - Core Service
+		ADDRESS: %s, PORT: %d
+		VERSION: %s
+
+	`, cfg.GRPC.Host, cfg.GRPC.Port, cfg.App.Version)
 
 	// Graceful shutdown
 	quit := make(chan os.Signal, 1)

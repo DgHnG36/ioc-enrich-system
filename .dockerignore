@@ -11,9 +11,6 @@
 .venv
 venv
 
-# Node modules
-**/node_modules
-
 # Logs and local outputs
 **/*.log
 **/*_results.json
@@ -23,9 +20,7 @@ coverage.out
 test/
 docs/
 notes/
-figures/
-scripts/
-data_sample/
+data_samples/
 
 # Local infra files
 .env
