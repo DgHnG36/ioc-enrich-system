@@ -55,13 +55,13 @@ services:
       PYTHONPATH: /app
       APP_ENV: development
       APP_ENABLE_METRICS: "true"
-      VIRUSTOTAL_API_KEY: 043345249ee8ca41be5c5f82931b1fa9ed1f975f6534df852ab9c4b199043357
+      VIRUSTOTAL_API_KEY: ""
       VIRUSTOTAL_ENABLED: "true"
-      ABUSEIPDB_API_KEY: dc16d141a0702f72314f9bbe011df8756430da523dca311467e59ec7a987e4400df52ce5cd224ee0
+      ABUSEIPDB_API_KEY: ""
       ABUSEIPDB_ENABLED: "true"
-      OTX_API_KEY: 4fd270b858b0383ef36385b8fc8250dc0ca98805efc5a4f33bf8b8f1e65c5253
+      OTX_API_KEY: ""
       OTX_ENABLED: "true"
-      HYBRID_ANALYSIS_API_KEY: kstum1d55d1d8628bw1tbl05c00c65c9s8vx24vga1bc75375gqa7au4e619c02a
+      HYBRID_ANALYSIS_API_KEY: ""
       HYBRID_ANALYSIS_ENABLED: "true"
       REDIS_HOST: redis
       REDIS_PORT: 6379
@@ -185,3 +185,4 @@ volumes:
 networks:
   ioc-network:
     driver: bridge
+
