@@ -82,8 +82,8 @@ A microservices-based **Indicator of Compromise (IoC) management and threat inte
 ### Prerequisites
 
 - Docker & Docker Compose
-- Go 1.24+
-- Python 3.12+
+- Go 1.22+
+- Python 3.11+
 - (Optional) [k6](https://k6.io/) for performance testing
 - (Optional) [minikube](https://minikube.sigs.k8s.io/) for local Kubernetes
 
